@@ -9,7 +9,7 @@ RUN apt update -y && apt install -y build-essential \
         curl \
     && rm -rf /var/lib/apt/lists/*
 
-ARG MONGO_VERSION=6.2.1
+ARG MONGO_VERSION=6.0.13
 
 RUN mkdir /src && \
     curl -o /tmp/mongo.tar.gz -L "https://github.com/mongodb/mongo/archive/refs/tags/r${MONGO_VERSION}.tar.gz" && \
