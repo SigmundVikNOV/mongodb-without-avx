@@ -24,8 +24,8 @@ RUN patch -p1 < /o2_patch.diff
 ARG NUM_JOBS=1
 
 RUN export GIT_PYTHON_REFRESH=quiet && \
-    python3 -m pip install requirements_parser && \
-    python3 -m pip install -r etc/pip/compile-requirements.txt && \
+    python3 -m pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org requirements_parser && \
+    python3 -m pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org -r etc/pip/compile-requirements.txt && \
     if [ "${NUM_JOBS}" -gt 0 ]; then export JOBS_ARG="-j ${NUM_JOBS}"; fi && \
     python3 buildscripts/scons.py install-devcore MONGO_VERSION="${MONGO_VERSION}" --release --disable-warnings-as-errors ${JOBS_ARG} && \
     mv build/install /install && \
@@ -63,20 +63,22 @@ RUN set -ex; \
 	savedAptMark="$(apt-mark showmanual)"; \
 	apt-get update; \
 	apt-get install -y --no-install-recommends \
-		wget \
+        curl \
+        openssl \
+        ca-certificates \
 	; \
 	rm -rf /var/lib/apt/lists/*; \
 	\
 	dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')"; \
-	wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch"; \
-	wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch.asc"; \
+	curl -L -k -o /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch"; \
+	curl -L -k -o /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch.asc"; \
 	export GNUPGHOME="$(mktemp -d)"; \
 	gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4; \
 	gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu; \
 	gpgconf --kill all; \
 	rm -rf "$GNUPGHOME" /usr/local/bin/gosu.asc; \
 	\
-	wget -O /js-yaml.js "https://github.com/nodeca/js-yaml/raw/${JSYAML_VERSION}/dist/js-yaml.js"; \
+	curl -L -k -o /js-yaml.js "https://github.com/nodeca/js-yaml/raw/${JSYAML_VERSION}/dist/js-yaml.js"; \
 # TODO some sort of download verification here
 	\
 	apt-mark auto '.*' > /dev/null; \
