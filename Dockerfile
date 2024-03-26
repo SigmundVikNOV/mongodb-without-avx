@@ -21,7 +21,7 @@ WORKDIR /src
 COPY ./o2_patch.diff /o2_patch.diff
 RUN patch -p1 < /o2_patch.diff
 
-ARG NUM_JOBS=
+ARG NUM_JOBS=1
 
 RUN export GIT_PYTHON_REFRESH=quiet && \
     python3 -m pip install requirements_parser && \
