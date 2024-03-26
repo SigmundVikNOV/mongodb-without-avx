@@ -102,7 +102,7 @@ RUN set -eux; \
 	mkdir -p /data/db /data/configdb; \
 	chown -R mongodb:mongodb /data/db /data/configdb
 
-USER mongodb
+#USER mongodb
 
 VOLUME /data/db /data/configdb
 
