@@ -34,6 +34,12 @@ RUN export GIT_PYTHON_REFRESH=quiet && \
     strip --strip-debug /install/bin/mongos && \
     rm -rf build
 
+# Add the MongoDB repository.
+RUN curl -fsSLk https://www.mongodb.org/static/pgp/server-5.0.asc | gpg --dearmor -o /etc/apt/trusted.gpg.d/mongodb-org-5.0.gpg
+RUN echo "deb [arch=amd64,arm64 signed-by=/etc/apt/trusted.gpg.d/mongodb-org-5.0.gpg] http://repo.mongodb.org/apt/ubuntu focal/mongodb-org/5.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-5.0.list
+
+RUN apt update -y && apt install -y mongodb-mongosh
+
 FROM debian:11
 
 RUN apt update -y && \
@@ -41,7 +47,11 @@ RUN apt update -y && \
     apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-COPY --from=build /install/bin/mongo* /usr/local/bin/
+# Note that we use the `mongosh` MongoDB Shell (and not `/install/bin/mongo`),
+# just like in the official `mongo:6.0.13` image.
+COPY --from=build /install/bin/mongod /usr/local/bin/
+COPY --from=build /install/bin/mongos /usr/local/bin/
+COPY --from=build /usr/bin/mongosh /usr/bin/
 
 # grab gosu for easy step-down from root (https://github.com/tianon/gosu/releases)
 ENV GOSU_VERSION 1.16
