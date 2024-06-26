@@ -41,6 +41,7 @@ RUN echo "deb [arch=amd64,arm64 signed-by=/etc/apt/trusted.gpg.d/mongodb-org-5.0
 RUN apt update -y && apt install -y mongodb-mongosh mongodb-database-tools
 
 FROM debian:11
+LABEL org.opencontainers.image.source https://github.com/SigmundVikNOV/mongodb-without-avx
 
 RUN apt update -y && \
     apt install -y libcurl4 && \
