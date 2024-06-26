@@ -71,6 +71,10 @@ RUN set -eux; \
 	; \
 	rm -rf /var/lib/apt/lists/*
 
+# If this step fails with "... did not complete successfully: exit code: 2", then run again after:
+# 1. Bypassing corporate proxy, this can be done by using a wireless network.
+#    In Zscaler Client Connector "Network Type" should be "Off-Trusted Network".
+# 2. Logging out of Zscaler.
 RUN set -ex; \
 	\
 	savedAptMark="$(apt-mark showmanual)"; \
